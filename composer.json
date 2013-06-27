@@ -1,0 +1,29 @@
+{
+    "name": "prolic/humus-stream-response-sender",
+    "type": "library",
+    "description": "ZF2 module that can send stream responses with additional features like download resume and speed limit",
+    "keywords": ["zf2", "stream", "humus"],
+    "homepage": "https://github.com/prolic/HumusStreamResponseSender",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sascha-Oliver Prolic",
+            "email": "saschaprolic@googlemail.com"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://packages.zendframework.com/"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zend-mvc": ">=2.1"
+    },
+    "autoload": {
+        "psr-0": {
+            "Humus\\StreamResponseSender": "src/Humus/StreamResponseSender"
+        }
+    }
+}
