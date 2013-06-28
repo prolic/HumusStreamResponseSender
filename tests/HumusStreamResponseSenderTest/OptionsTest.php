@@ -34,8 +34,8 @@ class OptionsTest extends TestCase
         );
         $this->assertTrue($options->getEnableDownloadResume());
         $this->assertTrue($options->getEnableSpeedLimit());
-        $this->assertSame($options->getChunkSize(), 1024);
+        $this->assertSame(1024, $options->getChunkSize());
         $options->setChunkSize(2048);
-        $this->assertSame($options->getChunkSize(), 2048);
+        $this->assertSame(2048, $options->getChunkSize());
     }
 }

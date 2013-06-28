@@ -11,7 +11,7 @@
         backupGlobals="false"
         syntaxCheck="true"
         >
-    <testsuite name="ProxyManager tests">
+    <testsuite name="HumusStreamResponseSender Test-Suite">
         <directory>./tests/HumusStreamResponseSenderTest</directory>
     </testsuite>
     <filter>

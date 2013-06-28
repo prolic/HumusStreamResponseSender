@@ -14,9 +14,11 @@
     "require": {
         "php": ">=5.3.3",
         "zendframework/zend-mvc": ">=2.2.1",
-        "zendframework/zend-http": ">=2.2.1"
+        "zendframework/zend-http": ">=2.2.1",
+        "zendframework/zend-modulemanager": ">=2.2.1"
     },
     "require-dev": {
+        "zendframework/zendframework": ">=2.2.1",
         "phpunit/phpunit": ">=3.7",
         "phpmd/phpmd": "1.4.*",
         "squizlabs/php_codesniffer": "1.4.*",
