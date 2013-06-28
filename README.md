@@ -3,7 +3,6 @@ HumusStreamResponseSender
 
 [![Build Status](https://travis-ci.org/prolic/HumusStreamResponseSender.png?branch=master)](https://travis-ci.org/prolic/HumusStreamResponseSender)
 [![Coverage Status](https://coveralls.io/repos/prolic/HumusStreamResponseSender/badge.png)](https://coveralls.io/r/prolic/HumusStreamResponseSender)
-[![Dependency Status](https://www.versioneye.com/user/projects/51cdf6155bca140002000998/badge.png)](https://www.versioneye.com/user/projects/51cdf6155bca140002000998)
 
 Introduction
 ------------
