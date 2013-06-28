@@ -16,13 +16,19 @@
  * and is licensed under the MIT license.
  */
 
-namespace HumusStreamResponseSender\Exception;
+namespace HumusStreamResponseSenderTest;
+
+use PHPUnit_Framework_TestCase as TestCase;
 
 /**
- * @category   Humus
- * @package    HumusStreamResponseSender
- * @license    MIT
+ * @category   Zend
+ * @package    Zend_Mvc
+ * @subpackage UnitTest
  */
-class InvalidArgumentException extends \InvalidArgumentException implements ExceptionInterface
+class StreamResponseSenderTest extends TestCase
 {
+    public function testTravis()
+    {
+        $this->assertTrue(true);
+    }
 }
