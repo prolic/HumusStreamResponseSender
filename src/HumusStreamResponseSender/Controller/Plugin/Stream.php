@@ -8,7 +8,7 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 use Zend\Stdlib\RequestInterface;
 use Zend\Stdlib\ResponseInterface;
 
-class Stream extends \Zend\Mvc\Controller\Plugin\AbstractPlugin
+class Stream extends AbstractPlugin
 {
     /**
      * @var RequestInterface
@@ -19,35 +19,6 @@ class Stream extends \Zend\Mvc\Controller\Plugin\AbstractPlugin
      * @var StreamResponse
      */
     protected $response;
-
-    /**
-     * content disposition stream
-     *
-     * @return StreamResponse
-     */
-    public function contentDisposition()
-    {
-        $response = $this->getResponse();
-        $responseHeaders = $response->getHeaders();
-
-        $responseHeaders->addHeaderLine(
-            'Content-Disposition', 'attachment; filename="' . $response->getStreamName() . '"'
-        );
-
-        return $response;
-    }
-
-    /**
-     * media stream
-     *
-     * @return StreamResponse
-     */
-    public function mediaStream()
-    {
-        $response = $this->getResponse();
-
-        return $response;
-    }
 
     /**
      * Set request

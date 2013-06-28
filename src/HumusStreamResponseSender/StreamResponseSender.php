@@ -29,6 +29,11 @@ class StreamResponseSender extends SimpleStreamResponseSender
     protected $request;
 
     /**
+     * @var int
+     */
+    private $range;
+
+    /**
      * @param array|Traversable|null|Options $options
      */
     public function __construct($options = null)
@@ -86,20 +91,47 @@ class StreamResponseSender extends SimpleStreamResponseSender
     }
 
     /**
-     * Send stream response
+     * Send HTTP headers
      *
      * @param  SendResponseEvent $event
-     * @return SimpleStreamResponseSender
+     * @return StreamResponseSender
      */
-    public function __invoke(SendResponseEvent $event)
+    public function sendHeaders(SendResponseEvent $event)
     {
+        /* @var $response Stream */
         $response = $event->getResponse();
-        if (!$response instanceof Stream) {
-            return $this;
+
+        $responseHeaders = $response->getHeaders();
+        if (!$responseHeaders->has('Content-Transfer-Encoding')) {
+            $responseHeaders->addHeaderLine('Content-Transfer-Encoding', 'binary');
         }
-        $this->sendStream($event);
-        $event->stopPropagation(true);
-        return $this;
+
+        $responseHeaders->addHeaderLine('Accept-Ranges', 'bytes');
+
+        $size = $response->getContentLength();
+        $size2 = $size - 1;
+
+        $requestHeaders = $this->getRequest()->getHeaders();
+
+        if ($requestHeaders->has('Range')) {
+            list($a, $range)=explode('=', $requestHeaders->get('Range')->getFieldValue());
+            str_replace($range, "-", $range);
+            $length = $size - $range;
+            $response->setStatusCode(206);
+            $responseHeaders->addHeaders(array(
+                'Content-Length: ' . $length,
+                'Content-Range: bytes ' . $range . $size2 . '/' . $size
+            ));
+            $this->range = (int) $range;
+        } else {
+            $responseHeaders->addHeaders(array(
+                'Content-Range: bytes 0-' . $size2 . '/' . $size,
+                'Content-Length: ' . $size
+            ));
+            $this->range = 0;
+        }
+
+        parent::sendHeaders($event);
     }
 
     /**
@@ -128,47 +160,12 @@ class StreamResponseSender extends SimpleStreamResponseSender
             return $this;
         }
 
-        $responseHeaders = $response->getHeaders();
-        if (!$responseHeaders->has('Content-Transfer-Encoding')) {
-            $responseHeaders->addHeaderLine('Content-Transfer-Encoding', 'binary');
-        }
-        /*
-        if (!$responseHeaders->has('Content-Disposition')) {
-            $responseHeaders->addHeaderLine(
-                'Content-Disposition', 'attachment; filename="' . $response->getStreamName() . '"'
-            );
-        }
-        */
-        $responseHeaders->addHeaderLine('Accept-Ranges', 'bytes');
+        set_time_limit(0);
 
-        $range = 0;
-        $size = $response->getContentLength();
-        $size2 = $size - 1;
-
-        $requestHeaders = $this->getRequest()->getHeaders();
-
-        if ($requestHeaders->has('Range')) {
-            list($a, $range)=explode('=', $requestHeaders->get('Range')->getFieldValue());
-            str_replace($range, "-", $range);
-            $length = $size - $range;
-            $response->setStatusCode(206);
-            $responseHeaders->addHeaders(array(
-                'Content-Length: ' . $length,
-                'Content-Range: bytes ' . $range . $size2 . '/' . $size
-            ));
-        } else {
-            $responseHeaders->addHeaders(array(
-                'Content-Range: bytes 0-' . $size2 . '/' . $size,
-                'Content-Length: ' . $size
-            ));
-        }
+        fseek($stream, $this->range);
 
         $chunkSize = $options->getChunkSize();
 
-        $this->sendHeaders($event);
-
-        set_time_limit(0);
-        fseek($stream, $range);
         while(!feof($stream) && (connection_status()==0))
         {
             echo fread($stream, $chunkSize);
