@@ -18,6 +18,7 @@ Requirements
 
 * [Zend Mvc 2.2.1](https://github.com/zendframework/zf2) (latest master)
 * [Zend Http 2.2.1](https://github.com/zendframework/zf2) (latest master)
+* [Zend ModuleManager 2.2.1](https://github.com/zendframework/zf2) (latest master)
 
 Features / Goals
 ----------------
