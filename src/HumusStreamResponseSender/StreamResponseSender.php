@@ -187,7 +187,7 @@ class StreamResponseSender extends SimpleStreamResponseSender
 
         $chunkSize = $options->getChunkSize();
 
-        while(!feof($stream) && (connection_status()==0)) {
+        while (!feof($stream) && (connection_status()==0)) {
 
             echo fread($stream, $chunkSize);
             flush();
