@@ -63,7 +63,6 @@ To return a stream response from a controller, you can use the stream plugin.
         {
             return $this->plugin('stream')->binaryFile('/path/to/my/file');
         }
-
     }
 
 Additional notes
