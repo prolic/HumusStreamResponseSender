@@ -47,7 +47,11 @@ class Module implements
         $streamResponseSender = $serviceManager->get(__NAMESPACE__ . '\StreamResponseSender');
         $sharedEventManager = $app->getEventManager()->getSharedManager();
         /* @var $sharedEventManager SharedEventManager */
-        $sharedEventManager->attach('Zend\Mvc\SendResponseListener', SendResponseEvent::EVENT_SEND_RESPONSE, $streamResponseSender);
+        $sharedEventManager->attach(
+            'Zend\Mvc\SendResponseListener',
+            SendResponseEvent::EVENT_SEND_RESPONSE,
+            $streamResponseSender
+        );
     }
 
     /**

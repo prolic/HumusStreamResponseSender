@@ -1,6 +1,9 @@
 HumusStreamResponseSender
 =========================
 
+[![Build Status](https://travis-ci.org/prolic/HumusStreamResponseSender.png?branch=master)](https://travis-ci.org/prolic/HumusStreamResponseSender)
+[![Coverage Status](https://coveralls.io/repos/prolic/HumusStreamResponseSender/badge.png)](https://coveralls.io/r/prolic/HumusStreamResponseSender)
+
 Introduction
 ------------
 

@@ -66,11 +66,12 @@ class Stream extends AbstractPlugin
         $response->setContentLength(filesize($filename));
 
         $headers = new Headers();
-        $headers->addHeaders(array(
-            'Content-Disposition' => 'attachment; filename="' . $basename . '"',
-            'Content-Type' => 'application/octet-stream',
-
-        ));
+        $headers->addHeaders(
+            array(
+                'Content-Disposition' => 'attachment; filename="' . $basename . '"',
+                'Content-Type' => 'application/octet-stream',
+            )
+        );
         $response->setHeaders($headers);
         return $response;
     }

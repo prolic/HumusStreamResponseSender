@@ -135,16 +135,20 @@ class StreamResponseSender extends SimpleStreamResponseSender
             str_replace($range, "-", $range);
             $length = $size - $range;
             $response->setStatusCode(206);
-            $responseHeaders->addHeaders(array(
+            $responseHeaders->addHeaders(
+                array(
                 'Content-Length: ' . $length,
                 'Content-Range: bytes ' . $range . $size2 . '/' . $size
-            ));
+                )
+            );
             $this->range = (int) $range;
         } else {
-            $responseHeaders->addHeaders(array(
+            $responseHeaders->addHeaders(
+                array(
                 'Content-Range: bytes 0-' . $size2 . '/' . $size,
                 'Content-Length: ' . $size
-            ));
+                )
+            );
             $this->range = 0;
         }
 
@@ -183,8 +187,8 @@ class StreamResponseSender extends SimpleStreamResponseSender
 
         $chunkSize = $options->getChunkSize();
 
-        while(!feof($stream) && (connection_status()==0))
-        {
+        while(!feof($stream) && (connection_status()==0)) {
+
             echo fread($stream, $chunkSize);
             flush();
             ob_flush();
