@@ -31,4 +31,23 @@ class StreamResponseSenderFactoryTest extends ServiceManagerTestCase
         $this->assertInstanceOf('HumusStreamResponseSender\StreamResponseSender', $streamResponseSender);
         $this->assertInstanceOf('Zend\Stdlib\RequestInterface', $streamResponseSender->getRequest());
     }
+
+    public function testCreateServiceWithOptions()
+    {
+        $serviceManager = $this->getServiceManager();
+        $config = $serviceManager->get('Config');
+        $config['HumusStreamResponseSender'] = array(
+            'enable_speed_limit' => true
+        );
+        $serviceManager->setAllowOverride(true);
+        $serviceManager->setService('Config', $config);
+        $serviceManager->setAllowOverride(false);
+
+        $factory = new StreamResponseSenderFactory();
+        $streamResponseSender = $factory->createService($serviceManager);
+
+        $this->assertInstanceOf('HumusStreamResponseSender\StreamResponseSender', $streamResponseSender);
+        $this->assertInstanceOf('Zend\Stdlib\RequestInterface', $streamResponseSender->getRequest());
+        $this->assertTrue($streamResponseSender->getOptions()->getEnableSpeedLimit());
+    }
 }
