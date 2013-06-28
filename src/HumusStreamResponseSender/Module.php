@@ -2,6 +2,7 @@
 
 namespace HumusStreamResponseSender;
 
+use Traversable;
 use Zend\EventManager\EventInterface;
 use Zend\EventManager\SharedEventManager;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
@@ -35,19 +36,18 @@ class Module implements
     /**
      * Returns configuration to merge with application configuration
      *
-     * @return array|\Traversable
+     * @return array|Traversable
      */
     public function getConfig()
     {
-        return array(
-            'service_manager' => array(
-                'factories' => array(
-                    __NAMESPACE__ . '\StreamResponseSender' => __NAMESPACE__ . '\StreamResponseSenderFactory'
-                )
-            )
-        );
+        return include __DIR__ . '/../../config/module.config.php';
     }
 
+    /**
+     * Returns autoloader configuration
+     *
+     * @return array|Traversable
+     */
     public function getAutoloaderConfig()
     {
         return array(

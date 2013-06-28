@@ -3,73 +3,54 @@
 namespace HumusStreamResponseSender\Controller\Plugin;
 
 use HumusStreamResponseSender\Exception;
+use Zend\Http\Headers;
 use Zend\Http\Response\Stream as StreamResponse;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin;
-use Zend\Stdlib\RequestInterface;
-use Zend\Stdlib\ResponseInterface;
 
 class Stream extends AbstractPlugin
 {
-    /**
-     * @var RequestInterface
-     */
-    protected $request;
 
     /**
-     * @var StreamResponse
-     */
-    protected $response;
-
-    /**
-     * Set request
+     * Returns a stream response for a binary file download
      *
-     * @param RequestInterface $request
-     * @return Stream
-     */
-    public function setRequest(RequestInterface $request)
-    {
-        $this->request = $request;
-        return $this;
-    }
-
-    /**
-     * Get request
+     * It uses the status code 206 (Partial Content)
+     * It generates the following headers automatically:
      *
-     * @return RequestInterface
-     */
-    public function getRequest()
-    {
-        return $this->request;
-    }
-
-    /**
-     * Set response
+     * Content-Disposition: 'attachment; filename="[basename of your filename argument]"
+     * Content-Type: application/octet-stream
      *
-     * @param ResponseInterface $response
-     * @return Stream
-     * @throws Exception\InvalidArgumentException
-     */
-    public function setResponse(ResponseInterface $response)
-    {
-        if (!$response instanceof StreamResponse) {
-            throw new Exception\InvalidArgumentException(
-                'Response must be an instance of Zend\Http\Response\Stream'
-            );
-        }
-        $this->response = $response;
-        return $this;
-    }
-
-    /**
-     * Get response
+     * Sample usage in controller:
      *
+     * return $this->plugin('stream')->binaryFile('/path/to/my/file');
+     *
+     *
+     * @param string $filename
      * @return StreamResponse
+     * @throws Exception\RuntimeException
      */
-    public function getResponse()
+    public function binaryFile($filename)
     {
-        if (!$this->response instanceof StreamResponse) {
-            $this->response = new StreamResponse();
+        if (!file_exists($filename) || !is_readable($filename)) {
+            throw new Exception\RuntimeException('Invalid filename given; not readable or does not exist');
         }
-        return $this->response;
+
+        $resource = fopen($filename, 'rb');
+        $basename = basename($filename);
+
+        $response = new StreamResponse();
+        $response->setStream($resource);
+        $response->setStatusCode(206);
+
+        $response->setStreamName($basename);
+        $response->setContentLength(filesize($filename));
+
+        $headers = new Headers();
+        $headers->addHeaders(array(
+            'Content-Disposition' => 'attachment; filename="' . $basename . '"',
+            'Content-Type' => 'application/octet-stream',
+
+        ));
+        $response->setHeaders($headers);
+        return $response;
     }
 }
