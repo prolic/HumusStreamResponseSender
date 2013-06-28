@@ -16,14 +16,26 @@
  * and is licensed under the MIT license.
  */
 
-namespace HumusStreamResponseSenderTest;
+namespace HumusStreamResponseSender;
 
 use PHPUnit_Framework_TestCase as TestCase;
+use Zend\Stdlib\AbstractOptions;
 
-class StreamResponseSenderTest extends TestCase
+class OptionsTest extends TestCase
 {
-    public function testTravis()
+    public function testGetSetOptions()
     {
-        $this->assertTrue(true);
+        $options = new Options(
+            array(
+                'enable_download_resume' => true,
+                'enable_speed_limit' => true,
+                'chunk_size' => 1024
+            )
+        );
+        $this->assertTrue($options->getEnableDownloadResume());
+        $this->assertTrue($options->getEnableSpeedLimit());
+        $this->assertSame($options->getChunkSize(), 1024);
+        $options->setChunkSize(2048);
+        $this->assertSame($options->getChunkSize(), 2048);
     }
 }
