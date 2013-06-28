@@ -6,6 +6,7 @@ return array(
     'HumusStreamResponseSender\Module'                             => __DIR__ . '/src/HumusStreamResponseSender/Module.php',
     'HumusStreamResponseSender\Controller\Plugin\Stream'           => __DIR__ . '/src/HumusStreamResponseSender/Controller/Plugin/Stream.php',
     'HumusStreamResponseSender\Options'                            => __DIR__ . '/src/HumusStreamResponseSender/Options.php',
+    'HumusStreamResponseSender\Exception\RuntimeException'         => __DIR__ . '/src/HumusStreamResponseSender/Exception/RuntimeException.php',
     'HumusStreamResponseSender\Exception\ExceptionInterface'       => __DIR__ . '/src/HumusStreamResponseSender/Exception/ExceptionInterface.php',
     'HumusStreamResponseSender\Exception\InvalidArgumentException' => __DIR__ . '/src/HumusStreamResponseSender/Exception/InvalidArgumentException.php',
 );
