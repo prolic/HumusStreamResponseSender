@@ -3,6 +3,9 @@ HumusStreamResponseSender
 
 [![Build Status](https://travis-ci.org/prolic/HumusStreamResponseSender.png?branch=master)](https://travis-ci.org/prolic/HumusStreamResponseSender)
 [![Coverage Status](https://coveralls.io/repos/prolic/HumusStreamResponseSender/badge.png)](https://coveralls.io/r/prolic/HumusStreamResponseSender)
+[![Total Downloads](https://poser.pugx.org/prolic/humus-stream-response-sender/downloads.png)](https://packagist.org/packages/prolic/humus-stream-response-sender)
+[![Latest Stable Version](https://poser.pugx.org/prolic/humus-stream-response-sender/v/stable.png)](https://packagist.org/packages/prolic/humus-stream-response-sender)
+[![Latest Unstable Version](https://poser.pugx.org/prolic/humus-stream-response-sender/v/unstable.png)](https://packagist.org/packages/prolic/humus-stream-response-sender)
 
 Introduction
 ------------
