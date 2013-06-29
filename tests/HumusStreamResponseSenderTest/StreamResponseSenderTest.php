@@ -28,7 +28,7 @@ class StreamResponseSenderTest extends TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSendHeadersInDefaultMode()
+    public function testSendHeadersAndStreamInDefaultMode()
     {
         if (!function_exists('xdebug_get_headers')) {
             $this->markTestSkipped('Xdebug extension needed, skipped test');
@@ -58,15 +58,18 @@ class StreamResponseSenderTest extends TestCase
         $mockSendResponseEvent
             ->expects($this->any())
             ->method('getResponse')
-            ->will($this->returnValue($response)
-            );
+            ->will($this->returnValue($response));
 
         $requestMock = $this->getMockForAbstractClass('Zend\Http\Request');
 
         $responseSender = new StreamResponseSender();
         $responseSender->setRequest($requestMock);
 
-        $responseSender->sendHeaders($mockSendResponseEvent);
+        ob_start();
+        $responseSender($mockSendResponseEvent);
+        $body = ob_get_clean();
+
+        $this->assertEquals(file_get_contents($testFile), $body);
 
         $expectedHeaders = array_merge(
             $headers,
