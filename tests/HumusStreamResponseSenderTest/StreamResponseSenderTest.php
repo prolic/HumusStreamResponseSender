@@ -55,8 +55,8 @@ class StreamResponseSenderTest extends TestCase
             'Zend\Mvc\ResponseSender\SendResponseEvent',
             array('getResponse')
         );
-        $mockSendResponseEvent->expects(
-            $this->any())
+        $mockSendResponseEvent
+            ->expects($this->any())
             ->method('getResponse')
             ->will($this->returnValue($response)
             );
@@ -68,16 +68,17 @@ class StreamResponseSenderTest extends TestCase
 
         $responseSender->sendHeaders($mockSendResponseEvent);
 
-        $expectedHeaders = array_merge($headers, array(
-            'Content-Transfer-Encoding: binary',
-            'Accept-Ranges: bytes',
-            'Content-Range: bytes 0-' . ($fileSize - 1) . '/' . $fileSize,
-            'Content-Length: ' . $fileSize
-
-        ));
+        $expectedHeaders = array_merge(
+            $headers,
+            array(
+                'Content-Transfer-Encoding: binary',
+                'Accept-Ranges: bytes',
+                'Content-Range: bytes 0-' . ($fileSize - 1) . '/' . $fileSize,
+                'Content-Length: ' . $fileSize
+            )
+        );
 
         $sentHeaders = xdebug_get_headers();
-
         $diff = array_diff($sentHeaders, $expectedHeaders);
 
         if (count($diff)) {
