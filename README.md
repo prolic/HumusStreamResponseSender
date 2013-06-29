@@ -6,6 +6,7 @@ HumusStreamResponseSender
 [![Total Downloads](https://poser.pugx.org/prolic/humus-stream-response-sender/downloads.png)](https://packagist.org/packages/prolic/humus-stream-response-sender)
 [![Latest Stable Version](https://poser.pugx.org/prolic/humus-stream-response-sender/v/stable.png)](https://packagist.org/packages/prolic/humus-stream-response-sender)
 [![Latest Unstable Version](https://poser.pugx.org/prolic/humus-stream-response-sender/v/unstable.png)](https://packagist.org/packages/prolic/humus-stream-response-sender)
+[![Dependency Status](https://www.versioneye.com/package/php:prolic:humus-stream-response-sender/badge.png)](https://www.versioneye.com/package/php:prolic:humus-stream-response-sender)
 
 Introduction
 ------------
