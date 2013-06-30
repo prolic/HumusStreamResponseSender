@@ -123,7 +123,7 @@ class StreamResponseSender extends SimpleStreamResponseSender
             $responseHeaders->addHeaderLine('Content-Transfer-Encoding', 'binary');
         }
 
-        $responseHeaders->addHeaderLine('Accept-Ranges', 'bytes');
+        $enableDownloadResume = $this->getOptions()->getEnableDownloadResume();
 
         $size = $response->getContentLength();
         $size2 = $size - 1;
@@ -134,7 +134,7 @@ class StreamResponseSender extends SimpleStreamResponseSender
         $range = '0-';
         $this->range = 0;
 
-        if ($requestHeaders->has('Range')) {
+        if ($enableDownloadResume && $requestHeaders->has('Range')) {
             list($a, $range) = explode('=', $requestHeaders->get('Range')->getFieldValue());
             str_replace($range, "-", $range);
             $length = $size - $range;
@@ -142,12 +142,16 @@ class StreamResponseSender extends SimpleStreamResponseSender
             $this->range = (int) $range;
         }
 
-        $responseHeaders->addHeaders(
-            array(
-                'Content-Length: ' . $length,
-                'Content-Range: bytes ' . $range . $size2 . '/' . $size,
-            )
-        );
+        $responseHeaders->addHeaderLine('Content-Length: ' . $length);
+
+        if ($enableDownloadResume) {
+            $responseHeaders->addHeaders(
+                array(
+                    'Accept-Ranges: bytes',
+                    'Content-Range: bytes ' . $range . $size2 . '/' . $size,
+                )
+            );
+        }
 
         parent::sendHeaders($event);
     }
@@ -179,9 +183,7 @@ class StreamResponseSender extends SimpleStreamResponseSender
         }
 
         set_time_limit(0);
-
         fseek($stream, $this->range);
-
         $chunkSize = $options->getChunkSize();
 
         while (!feof($stream) && (connection_status()==0)) {

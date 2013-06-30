@@ -75,14 +75,13 @@ class StreamResponseSenderTest extends TestCase
             $headers,
             array(
                 'Content-Transfer-Encoding: binary',
-                'Accept-Ranges: bytes',
-                'Content-Range: bytes 0-' . ($fileSize - 1) . '/' . $fileSize,
                 'Content-Length: ' . $fileSize
             )
         );
 
         $sentHeaders = xdebug_get_headers();
-        $diff = array_diff($sentHeaders, $expectedHeaders);
+
+        $diff = array_diff($expectedHeaders, $sentHeaders);
 
         if (count($diff)) {
             $header = array_shift($diff);
