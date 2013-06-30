@@ -52,7 +52,8 @@ class Stream extends AbstractPlugin
     public function binaryFile($filename)
     {
         if (!file_exists($filename) || !is_readable($filename)) {
-            throw new Exception\RuntimeException('Invalid filename given; not readable or does not exist');
+            throw new Exception\RuntimeException(
+                'Invalid filename given; not readable or does not exist');
         }
 
         $resource = fopen($filename, 'rb');
