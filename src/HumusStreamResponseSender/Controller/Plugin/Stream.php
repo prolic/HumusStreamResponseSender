@@ -53,7 +53,8 @@ class Stream extends AbstractPlugin
     {
         if (!file_exists($filename) || !is_readable($filename)) {
             throw new Exception\RuntimeException(
-                'Invalid filename given; not readable or does not exist');
+                'Invalid filename given; not readable or does not exist'
+            );
         }
 
         $resource = fopen($filename, 'rb');
