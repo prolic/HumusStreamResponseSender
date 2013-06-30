@@ -130,27 +130,24 @@ class StreamResponseSender extends SimpleStreamResponseSender
 
         $requestHeaders = $this->getRequest()->getHeaders();
 
+        $length = $size;
+        $range = '0-';
+        $this->range = 0;
+
         if ($requestHeaders->has('Range')) {
-            list($a, $range)=explode('=', $requestHeaders->get('Range')->getFieldValue());
+            list($a, $range) = explode('=', $requestHeaders->get('Range')->getFieldValue());
             str_replace($range, "-", $range);
             $length = $size - $range;
-            $response->setStatusCode(206);
-            $responseHeaders->addHeaders(
-                array(
-                'Content-Length: ' . $length,
-                'Content-Range: bytes ' . $range . $size2 . '/' . $size
-                )
-            );
+            $response->setStatusCode(206); // 206 (Partial Content)
             $this->range = (int) $range;
-        } else {
-            $responseHeaders->addHeaders(
-                array(
-                'Content-Range: bytes 0-' . $size2 . '/' . $size,
-                'Content-Length: ' . $size
-                )
-            );
-            $this->range = 0;
         }
+
+        $responseHeaders->addHeaders(
+            array(
+                'Content-Length: ' . $length,
+                'Content-Range: bytes ' . $range . $size2 . '/' . $size,
+            )
+        );
 
         parent::sendHeaders($event);
     }
