@@ -18,25 +18,25 @@
 
 namespace HumusStreamResponseSenderTest;
 
-use HumusStreamResponseSender\Options;
+use HumusStreamResponseSender\Module;
 use PHPUnit_Framework_TestCase as TestCase;
-use Zend\Stdlib\AbstractOptions;
+use Traversable;
 
-class OptionsTest extends TestCase
+class ModuleTest extends TestCase
 {
-    public function testGetSetOptions()
+    public function testGetConfig()
     {
-        $options = new Options(
-            array(
-                'enable_download_resume' => true,
-                'enable_speed_limit' => true,
-                'chunk_size' => 1024
-            )
-        );
-        $this->assertTrue($options->getEnableDownloadResume());
-        $this->assertTrue($options->getEnableSpeedLimit());
-        $this->assertSame(1024, $options->getChunkSize());
-        $options->setChunkSize(2048);
-        $this->assertSame(2048, $options->getChunkSize());
+        $module = new Module();
+        $config = $module->getConfig();
+        $this->assertInternalType('array', $config);
+    }
+
+    public function testGetAutoloaderConfig()
+    {
+        $module = new Module();
+        $config = $module->getAutoloaderConfig();
+        if (!is_array($config) && !($config instanceof Traversable)) {
+            $this->fail('getAutoloaderConfig expected to return array or Traversable');
+        }
     }
 }
