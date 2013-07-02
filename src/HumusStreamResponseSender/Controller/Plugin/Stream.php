@@ -30,7 +30,6 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin;
  */
 class Stream extends AbstractPlugin
 {
-
     /**
      * Returns a stream response for a binary file download
      *
@@ -47,12 +46,12 @@ class Stream extends AbstractPlugin
      *
      * @param string $filename
      * @return StreamResponse
-     * @throws Exception\RuntimeException
+     * @throws Exception\InvalidArgumentException
      */
     public function binaryFile($filename)
     {
         if (!file_exists($filename) || !is_readable($filename)) {
-            throw new Exception\RuntimeException(
+            throw new Exception\InvalidArgumentException(
                 'Invalid filename given; not readable or does not exist'
             );
         }
