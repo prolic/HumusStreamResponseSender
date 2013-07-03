@@ -48,7 +48,12 @@ class StreamResponseSender extends SimpleStreamResponseSender
     /**
      * @var int
      */
-    private $range;
+    private $rangeStart;
+
+    /**
+     * @var int
+     */
+    private $rangeEnd;
 
     /**
      * @param array|Traversable|null|Options $options
@@ -123,23 +128,49 @@ class StreamResponseSender extends SimpleStreamResponseSender
             $responseHeaders->addHeaderLine('Content-Transfer-Encoding', 'binary');
         }
 
-        $enableDownloadResume = $this->getOptions()->getEnableDownloadResume();
-
         $size = $response->getContentLength();
         $size2 = $size - 1;
 
-        $requestHeaders = $this->getRequest()->getHeaders();
-
         $length = $size;
-        $range = '0-';
-        $this->range = 0;
+        $this->rangeStart = 0;
+        $this->rangeEnd = null;
+
+        $enableDownloadResume = $this->getOptions()->getEnableDownloadResume();
+        $requestHeaders = $this->getRequest()->getHeaders();
 
         if ($enableDownloadResume && $requestHeaders->has('Range')) {
             list($a, $range) = explode('=', $requestHeaders->get('Range')->getFieldValue());
-            str_replace($range, "-", $range);
-            $length = $size - $range;
+            if (substr($range, -1) == '-') {
+                // range: 3442-
+                $range = substr($range, 0, -1);
+                if (!is_numeric($range) || $range > $size2) {
+                    // 416 (Requested range not satisfiable)
+                    $response->setStatusCode(416);
+                    $event->setContentSent();
+                    return $this;
+                }
+                $this->rangeStart = $range;
+                $length = $size - $range;
+            } else {
+                $ranges = explode('-', $range, 2);
+                $rangeStart = $ranges[0];
+                $rangeEnd = $ranges[1];
+                if (!is_numeric($rangeStart)
+                    || !is_numeric($rangeEnd)
+                    || ($rangeStart >= $rangeEnd)
+                    || $rangeEnd > $size2
+                ) {
+                    // 416 (Requested range not satisfiable)
+                    $response->setStatusCode(416);
+                    $event->setContentSent();
+                    return $this;
+                }
+                $this->rangeStart = $rangeStart;
+                $this->rangeEnd = $rangeEnd;
+                $length = $rangeEnd - $rangeStart;
+                $size2 = $rangeEnd;
+            }
             $response->setStatusCode(206); // 206 (Partial Content)
-            $this->range = (int) $range;
         }
 
         $responseHeaders->addHeaderLine('Content-Length: ' . $length);
@@ -148,7 +179,7 @@ class StreamResponseSender extends SimpleStreamResponseSender
             $responseHeaders->addHeaders(
                 array(
                     'Accept-Ranges: bytes',
-                    'Content-Range: bytes ' . $range . $size2 . '/' . $size,
+                    'Content-Range: bytes ' . $this->rangeStart . $size2 . '/' . $size,
                 )
             );
         }
@@ -183,21 +214,37 @@ class StreamResponseSender extends SimpleStreamResponseSender
         }
 
         set_time_limit(0);
-        fseek($stream, $this->range);
+        $rangeStart = $this->rangeStart;
+        if (null !== $this->rangeEnd) {
+            $rangeEnd = $this->rangeEnd;
+            $length = $rangeEnd-$rangeStart;
+        } else {
+            $length = $response->getContentLength();
+        }
+
+        fseek($stream, $rangeStart);
         $chunkSize = $options->getChunkSize();
+
+        if ($chunkSize > $length) {
+            $chunkSize = $length;
+        }
+        $sizeSent = 0;
 
         while (!feof($stream) && (connection_status()==0)) {
 
             echo fread($stream, $chunkSize);
             flush();
-            ob_flush();
+
+            $sizeSent += $chunkSize;
+
+            if ($sizeSent == $length) {
+                $event->setContentSent();
+                return $this;
+            }
 
             if ($enableSpeedLimit) {
                 sleep(1);
             }
         }
-
-        $event->setContentSent();
-        return $this;
     }
 }

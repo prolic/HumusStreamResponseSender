@@ -31,4 +31,25 @@ class StreamTest extends TestCase
         $utt = new Stream();
         $utt->binaryFile('/invalid/path');
     }
+
+    public function testBinaryFile()
+    {
+        $utt = new Stream();
+        $filename = __DIR__ . '/../../TestAsset/sample-stream-file.txt';
+        $filesize = filesize($filename);
+        $basename = basename($filename);
+
+
+        $response = $utt->binaryFile($filename);
+        $this->assertInstanceOf('Zend\Http\Response\Stream', $response);
+        $this->assertInternalType('resource', $response->getStream());
+        $this->assertSame($basename, $response->getStreamName());
+        $this->assertSame($filesize, $response->getContentLength());
+        $headers = $response->getHeaders()->toArray();
+        $expectedHeaders = array(
+                'Content-Disposition' => 'attachment; filename="' . $basename . '"',
+                'Content-Type' => 'application/octet-stream',
+        );
+        $this->assertSame($expectedHeaders, $headers);
+    }
 }

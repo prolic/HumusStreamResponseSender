@@ -61,7 +61,6 @@ class Stream extends AbstractPlugin
 
         $response = new StreamResponse();
         $response->setStream($resource);
-        $response->setStatusCode(206);
 
         $response->setStreamName($basename);
         $response->setContentLength(filesize($filename));

@@ -26,16 +26,36 @@ use Zend\Http\Response\Stream;
 class StreamResponseSenderTest extends TestCase
 {
     /**
-     * @runInSeparateProcess
+     * @var \Zend\Mvc\ResponseSender\SendResponseEvent
      */
-    public function testSendHeadersAndStreamInDefaultMode()
-    {
-        if (!function_exists('xdebug_get_headers')) {
-            $this->markTestSkipped('Xdebug extension needed, skipped test');
-        }
+    protected $mockSendResponseEvent;
 
+    /**
+     * @var string
+     */
+    protected $testFile;
+
+    /**
+     * @var int
+     */
+    protected $fileSize;
+
+    /**
+     * @var array
+     */
+    protected $headers;
+
+    /**
+     * @var \Zend\Http\Request
+     */
+    protected $requestMock;
+
+    protected function setUp()
+    {
         $testFile = __DIR__ . '/TestAsset/sample-stream-file.txt';
+        $this->testFile = $testFile;
         $fileSize = filesize($testFile);
+        $this->fileSize = $fileSize;
         $basename = basename($testFile);
         $stream = fopen($testFile, 'rb');
 
@@ -43,13 +63,13 @@ class StreamResponseSenderTest extends TestCase
             'Content-Disposition: attachment; filename="' . $basename . '"',
             'Content-Type: application/octet-stream',
         );
+        $this->headers = $headers;
 
         $response = new Stream();
         $response->setStream($stream);
         $response->setContentLength($fileSize);
         $response->setStreamName($basename);
         $response->getHeaders()->addHeaders($headers);
-
 
         $mockSendResponseEvent = $this->getMock(
             'Zend\Mvc\ResponseSender\SendResponseEvent',
@@ -62,11 +82,28 @@ class StreamResponseSenderTest extends TestCase
 
         $requestMock = $this->getMockForAbstractClass('Zend\Http\Request');
 
+        $this->requestMock = $requestMock;
+        $this->mockSendResponseEvent = $mockSendResponseEvent;
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSendHeadersAndStreamInDefaultMode()
+    {
+        if (!function_exists('xdebug_get_headers')) {
+            $this->markTestSkipped('Xdebug extension needed, skipped test');
+        }
+
+        $testFile = $this->testFile;
+        $fileSize = $this->fileSize;
+        $headers = $this->headers;
+
         $responseSender = new StreamResponseSender();
-        $responseSender->setRequest($requestMock);
+        $responseSender->setRequest($this->requestMock);
 
         ob_start();
-        $responseSender($mockSendResponseEvent);
+        $responseSender($this->mockSendResponseEvent);
         $body = ob_get_clean();
 
         $this->assertEquals(file_get_contents($testFile), $body);
@@ -88,5 +125,236 @@ class StreamResponseSenderTest extends TestCase
             $this->assertContains('XDEBUG_SESSION', $header);
             $this->assertEquals(0, count($diff));
         }
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSendHeadersAndStreamWithEnabledDownloadResumeWithoutRangeHeaders()
+    {
+        if (!function_exists('xdebug_get_headers')) {
+            $this->markTestSkipped('Xdebug extension needed, skipped test');
+        }
+
+        $testFile = $this->testFile;
+        $fileSize = $this->fileSize;
+        $headers = $this->headers;
+
+        $responseSender = new StreamResponseSender(
+            array(
+                'enable_download_resume' => true
+            )
+        );
+        $responseSender->setRequest($this->requestMock);
+
+        ob_start();
+        $responseSender($this->mockSendResponseEvent);
+        $body = ob_get_clean();
+
+        $this->assertEquals(file_get_contents($testFile), $body);
+
+        $expectedHeaders = array_merge(
+            $headers,
+            array(
+                'Content-Transfer-Encoding: binary',
+                'Content-Length: ' . $fileSize
+            )
+        );
+
+        $sentHeaders = xdebug_get_headers();
+
+        $diff = array_diff($expectedHeaders, $sentHeaders);
+
+        if (count($diff)) {
+            $header = array_shift($diff);
+            $this->assertContains('XDEBUG_SESSION', $header);
+            $this->assertEquals(0, count($diff));
+        }
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSendHeadersAndStreamWithEnabledDownloadResumeWithoutRangeHeadersAndChunkSize()
+    {
+        if (!function_exists('xdebug_get_headers')) {
+            $this->markTestSkipped('Xdebug extension needed, skipped test');
+        }
+
+        $testFile = $this->testFile;
+        $fileSize = $this->fileSize;
+        $headers = $this->headers;
+
+        $responseSender = new StreamResponseSender(
+            array(
+                'enable_download_resume' => true,
+                'chunk_size' => 10
+            )
+        );
+        $responseSender->setRequest($this->requestMock);
+
+        ob_start();
+        $responseSender($this->mockSendResponseEvent);
+        $body = ob_get_clean();
+
+        $this->assertEquals(file_get_contents($testFile), $body);
+
+        $expectedHeaders = array_merge(
+            $headers,
+            array(
+                'Content-Transfer-Encoding: binary',
+                'Content-Length: ' . $fileSize
+            )
+        );
+
+        $sentHeaders = xdebug_get_headers();
+
+        $diff = array_diff($expectedHeaders, $sentHeaders);
+
+        if (count($diff)) {
+            $header = array_shift($diff);
+            $this->assertContains('XDEBUG_SESSION', $header);
+            $this->assertEquals(0, count($diff));
+        }
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSendHeadersAndStreamWithEnabledDownloadResumeWithInvalidRangeStartHeader()
+    {
+        if (!function_exists('xdebug_get_headers')) {
+            $this->markTestSkipped('Xdebug extension needed, skipped test');
+        }
+
+        $testFile = $this->testFile;
+        $fileSize = $this->fileSize;
+        $headers = $this->headers;
+
+        $responseSender = new StreamResponseSender(
+            array(
+                'enable_download_resume' => true
+            )
+        );
+
+        $this->requestMock->getHeaders()->addHeaderLine('Range: bytes=6290368-');
+        $responseSender->setRequest($this->requestMock);
+
+        $responseSender($this->mockSendResponseEvent);
+
+        $this->assertSame(416, $this->mockSendResponseEvent->getResponse()->getStatusCode());
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSendHeadersAndStreamWithEnabledDownloadResumeWithInvalidRangeEndHeader()
+    {
+        if (!function_exists('xdebug_get_headers')) {
+            $this->markTestSkipped('Xdebug extension needed, skipped test');
+        }
+
+        $testFile = $this->testFile;
+        $fileSize = $this->fileSize;
+        $headers = $this->headers;
+
+        $responseSender = new StreamResponseSender(
+            array(
+                'enable_download_resume' => true
+            )
+        );
+
+        $this->requestMock->getHeaders()->addHeaderLine('Range: bytes=1-37487329');
+        $responseSender->setRequest($this->requestMock);
+
+        $responseSender($this->mockSendResponseEvent);
+
+        $this->assertSame(416, $this->mockSendResponseEvent->getResponse()->getStatusCode());
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSendHeadersAndStreamWithEnabledDownloadResumeWithInvalidRangeStartAndEndHeader()
+    {
+        if (!function_exists('xdebug_get_headers')) {
+            $this->markTestSkipped('Xdebug extension needed, skipped test');
+        }
+
+        $testFile = $this->testFile;
+        $fileSize = $this->fileSize;
+        $headers = $this->headers;
+
+        $responseSender = new StreamResponseSender(
+            array(
+                'enable_download_resume' => true
+            )
+        );
+
+        $this->requestMock->getHeaders()->addHeaderLine('Range: bytes=6290368-37487329');
+        $responseSender->setRequest($this->requestMock);
+
+        $responseSender($this->mockSendResponseEvent);
+
+        $this->assertSame(416, $this->mockSendResponseEvent->getResponse()->getStatusCode());
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSendHeadersAndStreamWithEnabledDownloadResumeWithInvalidRangeStartHeader2()
+    {
+        if (!function_exists('xdebug_get_headers')) {
+            $this->markTestSkipped('Xdebug extension needed, skipped test');
+        }
+
+        $testFile = $this->testFile;
+        $fileSize = $this->fileSize;
+        $headers = $this->headers;
+
+        $responseSender = new StreamResponseSender(
+            array(
+                'enable_download_resume' => true
+            )
+        );
+
+        $this->requestMock->getHeaders()->addHeaderLine('Range: bytes=fkjdsfs-');
+        $responseSender->setRequest($this->requestMock);
+
+        $responseSender($this->mockSendResponseEvent);
+
+        $this->assertSame(416, $this->mockSendResponseEvent->getResponse()->getStatusCode());
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSendHeadersAndStreamWithEnabledDownloadResumeWithRangeHeader()
+    {
+        if (!function_exists('xdebug_get_headers')) {
+            $this->markTestSkipped('Xdebug extension needed, skipped test');
+        }
+
+        $testFile = $this->testFile;
+        $fileSize = $this->fileSize;
+        $headers = $this->headers;
+
+        $responseSender = new StreamResponseSender(
+            array(
+                'enable_download_resume' => true,
+                'chunk_size' => 10
+            )
+        );
+
+        $this->requestMock->getHeaders()->addHeaderLine('Range: bytes=4-10');
+        $responseSender->setRequest($this->requestMock);
+
+        ob_start();
+        $responseSender($this->mockSendResponseEvent);
+        $body = ob_get_clean();
+
+        $this->assertEquals(' is a ', $body);
+
+        $this->assertSame(206, $this->mockSendResponseEvent->getResponse()->getStatusCode());
     }
 }
