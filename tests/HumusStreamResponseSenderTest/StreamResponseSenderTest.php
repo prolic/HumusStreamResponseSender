@@ -98,7 +98,7 @@ class StreamResponseSenderTest extends TestCase
     {
         $sentHeaders = xdebug_get_headers();
 
-        $diff = array_diff($expected, $sentHeaders);
+        $diff = array_diff($sentHeaders, $expected);
 
         if (count($diff)) {
             $header = array_shift($diff);
@@ -129,6 +129,7 @@ class StreamResponseSenderTest extends TestCase
 
         $this->assertSame(200, $this->mockSendResponseEvent->getResponse()->getStatusCode());
 
+        $this->headers[] = 'Accept-Ranges: none';
         $this->validateSentHeaders($this->headers);
     }
 
@@ -156,6 +157,8 @@ class StreamResponseSenderTest extends TestCase
 
         $this->assertEquals(file_get_contents($testFile), $body);
 
+        $this->headers[] = 'Accept-Ranges: bytes';
+        $this->headers[] = 'Content-Range: bytes 0-65/66';
         $this->validateSentHeaders($this->headers);
     }
 
@@ -186,6 +189,8 @@ class StreamResponseSenderTest extends TestCase
 
         $this->assertEquals(file_get_contents($testFile), $body);
 
+        $this->headers[] = 'Accept-Ranges: bytes';
+        $this->headers[] = 'Content-Range: bytes 0-65/66';
         $this->validateSentHeaders($this->headers);
     }
 
@@ -194,10 +199,6 @@ class StreamResponseSenderTest extends TestCase
      */
     public function testSendHeadersAndStreamWithEnabledDownloadResumeWithInvalidRangeStartHeader()
     {
-        if (!function_exists('xdebug_get_headers')) {
-            $this->markTestSkipped('Xdebug extension needed, skipped test');
-        }
-
         $responseSender = new StreamResponseSender(
             array(
                 'enable_download_resume' => true
@@ -220,10 +221,6 @@ class StreamResponseSenderTest extends TestCase
      */
     public function testSendHeadersAndStreamWithEnabledDownloadResumeWithInvalidRangeEndHeader()
     {
-        if (!function_exists('xdebug_get_headers')) {
-            $this->markTestSkipped('Xdebug extension needed, skipped test');
-        }
-
         $responseSender = new StreamResponseSender(
             array(
                 'enable_download_resume' => true
@@ -246,10 +243,6 @@ class StreamResponseSenderTest extends TestCase
      */
     public function testSendHeadersAndStreamWithEnabledDownloadResumeWithInvalidRangeStartAndEndHeader()
     {
-        if (!function_exists('xdebug_get_headers')) {
-            $this->markTestSkipped('Xdebug extension needed, skipped test');
-        }
-
         $responseSender = new StreamResponseSender(
             array(
                 'enable_download_resume' => true
@@ -272,10 +265,6 @@ class StreamResponseSenderTest extends TestCase
      */
     public function testSendHeadersAndStreamWithEnabledDownloadResumeWithInvalidRangeStartHeader2()
     {
-        if (!function_exists('xdebug_get_headers')) {
-            $this->markTestSkipped('Xdebug extension needed, skipped test');
-        }
-
         $responseSender = new StreamResponseSender(
             array(
                 'enable_download_resume' => true
@@ -379,10 +368,6 @@ class StreamResponseSenderTest extends TestCase
      */
     public function testSpeedLimit()
     {
-        if (!function_exists('xdebug_get_headers')) {
-            $this->markTestSkipped('Xdebug extension needed, skipped test');
-        }
-
         $responseSender = new StreamResponseSender(
             array(
                 'enable_speed_limit' => true,

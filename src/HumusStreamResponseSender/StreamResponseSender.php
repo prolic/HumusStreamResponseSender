@@ -182,6 +182,8 @@ class StreamResponseSender extends SimpleStreamResponseSender
                     'Content-Range: bytes ' . $this->rangeStart . '-' . $size2 . '/' . $size,
                 )
             );
+        } else {
+            $responseHeaders->addHeaderLine('Accept-Ranges: none');
         }
 
         parent::sendHeaders($event);
