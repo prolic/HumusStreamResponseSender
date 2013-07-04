@@ -179,7 +179,7 @@ class StreamResponseSender extends SimpleStreamResponseSender
             $responseHeaders->addHeaders(
                 array(
                     'Accept-Ranges: bytes',
-                    'Content-Range: bytes ' . $this->rangeStart . $size2 . '/' . $size,
+                    'Content-Range: bytes ' . $this->rangeStart . '-' . $size2 . '/' . $size,
                 )
             );
         }
