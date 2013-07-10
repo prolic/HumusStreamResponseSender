@@ -49,45 +49,45 @@ class Stream extends AbstractPlugin
      * @param string|int $filesize
      * @param DateTime|null $lastModified
      * @return StreamResponse
-     * @throws Exception\InvalidArgumentException
      */
     public function binaryFile($filename, $basename = null, $filesize = null, DateTime $lastModified = null)
     {
-        if (!file_exists($filename) || !is_readable($filename)) {
-            throw new Exception\InvalidArgumentException(
-                'Invalid filename given; not readable or does not exist'
-            );
-        }
-
-        $resource = fopen($filename, 'rb');
-
-        if (null === $basename) {
-            $basename = basename($filename);
-        }
-
-        if (null === $filesize) {
-            $filesize = filesize($filename);
-        }
-
-        if (null === $lastModified) {
-            $lastModified = new DateTime();
-            $lastModified->setTimestamp(filemtime($filename));
-            $lastModified = $lastModified->format(DateTime::RFC1123);
-        }
-
         $response = new StreamResponse();
-        $response->setStream($resource);
+
+        // assume static file download
+        if (file_exists($filename) && is_readable($filename)) {
+            $resource = fopen($filename, 'rb');
+            $response->setStream($resource);
+
+            if (null === $basename) {
+                $basename = basename($filename);
+            }
+
+            if (null === $filesize) {
+                $filesize = filesize($filename);
+            }
+
+            if (null === $lastModified) {
+                $lastModified = new DateTime();
+                $lastModified->setTimestamp(filemtime($filename));
+                $lastModified = $lastModified->format(DateTime::RFC1123);
+            }
+        }
+
         $response->setStreamName($basename);
         $response->setContentLength($filesize);
 
-        $headers = new Headers();
-        $headers->addHeaders(
-            array(
-                'Content-Disposition' => 'attachment; filename="' . $basename . '"',
-                'Content-Type' => 'application/octet-stream',
-                'Last-Modified' => $lastModified
-            )
+        $autoAddedHeaders = array(
+            'Content-Disposition' => 'attachment; filename="' . $basename . '"',
+            'Content-Type' => 'application/octet-stream',
         );
+
+        if (null !== $lastModified) {
+            $autoAddedHeaders['Last-Modified'] = $lastModified;
+        }
+
+        $headers = new Headers();
+        $headers->addHeaders($autoAddedHeaders);
         $response->setHeaders($headers);
         return $response;
     }

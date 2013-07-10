@@ -23,15 +23,6 @@ use PHPUnit_Framework_TestCase as TestCase;
 
 class StreamTest extends TestCase
 {
-    /**
-     * @expectedException HumusStreamResponseSender\Exception\InvalidArgumentException
-     */
-    public function testBinaryFileWithNotExistentFile()
-    {
-        $utt = new Stream();
-        $utt->binaryFile('/invalid/path');
-    }
-
     public function testBinaryFile()
     {
         $utt = new Stream();
