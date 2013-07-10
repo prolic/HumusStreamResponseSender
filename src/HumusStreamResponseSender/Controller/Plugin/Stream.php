@@ -18,6 +18,7 @@
 
 namespace HumusStreamResponseSender\Controller\Plugin;
 
+use DateTime;
 use HumusStreamResponseSender\Exception;
 use Zend\Http\Headers;
 use Zend\Http\Response\Stream as StreamResponse;
@@ -43,12 +44,14 @@ class Stream extends AbstractPlugin
      *
      * return $this->plugin('stream')->binaryFile('/path/to/my/file');
      *
-     *
-     * @param string $filename
+     * @param $filename
+     * @param string|null $basename
+     * @param string|int $filesize
+     * @param DateTime|null $lastModified
      * @return StreamResponse
      * @throws Exception\InvalidArgumentException
      */
-    public function binaryFile($filename)
+    public function binaryFile($filename, $basename = null, $filesize = null, DateTime $lastModified = null)
     {
         if (!file_exists($filename) || !is_readable($filename)) {
             throw new Exception\InvalidArgumentException(
@@ -57,19 +60,32 @@ class Stream extends AbstractPlugin
         }
 
         $resource = fopen($filename, 'rb');
-        $basename = basename($filename);
+
+        if (null === $basename) {
+            $basename = basename($filename);
+        }
+
+        if (null === $filesize) {
+            $filesize = filesize($filename);
+        }
+
+        if (null === $lastModified) {
+            $lastModified = new DateTime();
+            $lastModified->setTimestamp(filemtime($filename));
+            $lastModified = $lastModified->format(DateTime::RFC1123);
+        }
 
         $response = new StreamResponse();
         $response->setStream($resource);
-
         $response->setStreamName($basename);
-        $response->setContentLength(filesize($filename));
+        $response->setContentLength($filesize);
 
         $headers = new Headers();
         $headers->addHeaders(
             array(
                 'Content-Disposition' => 'attachment; filename="' . $basename . '"',
                 'Content-Type' => 'application/octet-stream',
+                'Last-Modified' => $lastModified
             )
         );
         $response->setHeaders($headers);

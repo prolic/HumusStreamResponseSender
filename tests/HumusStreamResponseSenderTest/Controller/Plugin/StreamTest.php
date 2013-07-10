@@ -38,7 +38,9 @@ class StreamTest extends TestCase
         $filename = __DIR__ . '/../../TestAsset/sample-stream-file.txt';
         $filesize = filesize($filename);
         $basename = basename($filename);
-
+        $lastModified = new \DateTime();
+        $lastModified->setTimestamp(filemtime($filename));
+        $lastModified = $lastModified->format(\DateTime::RFC1123);
 
         $response = $utt->binaryFile($filename);
         $this->assertInstanceOf('Zend\Http\Response\Stream', $response);
@@ -47,8 +49,9 @@ class StreamTest extends TestCase
         $this->assertSame($filesize, $response->getContentLength());
         $headers = $response->getHeaders()->toArray();
         $expectedHeaders = array(
-                'Content-Disposition' => 'attachment; filename="' . $basename . '"',
-                'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $basename . '"',
+            'Content-Type' => 'application/octet-stream',
+            'Last-Modified' => $lastModified
         );
         $this->assertSame($expectedHeaders, $headers);
     }
