@@ -1,8 +1,8 @@
 {
     "name": "prolic/humus-stream-response-sender",
     "type": "library",
-    "description": "ZF2 module that can send stream responses with additional features like download resume and speed limit",
-    "keywords": ["zf2", "stream", "humus", "http"],
+    "description": "ZF2 module that can send stream responses with http range header, xsendfile & pecl_http support",
+    "keywords": ["zf2", "stream", "humus", "http", "nginx" , "apache" , "xsendfile"],
     "homepage": "https://github.com/prolic/HumusStreamResponseSender",
     "license": "MIT",
     "authors": [

@@ -11,8 +11,8 @@ HumusStreamResponseSender
 Introduction
 ------------
 
-HumusStreamResponseSender is a Zend Framework 2 module that sends stream responses with additional
-features like download resume and speed limit
+HumusStreamResponseSender is a Zend Framework 2 module that sends stream responses
+with HTTP Range header, XSendFile & pecl_http support.
 
 Requirements
 ------------
