@@ -30,7 +30,7 @@ class Options extends AbstractOptions
     /**
      * @var bool
      */
-    protected $enableDownloadResume = false;
+    protected $enableRangeSupport = false;
 
     /**
      * @var bool
@@ -67,23 +67,23 @@ class Options extends AbstractOptions
     }
 
     /**
-     * Set enable download resume
+     * Set enable range support
      *
-     * @param bool $enableDownloadResume
+     * @param bool $enableRangeSupport
      */
-    public function setEnableDownloadResume($enableDownloadResume)
+    public function setEnableRangeSupport($enableRangeSupport)
     {
-        $this->enableDownloadResume = (bool) $enableDownloadResume;
+        $this->enableRangeSupport = (bool) $enableRangeSupport;
     }
 
     /**
-     * Get enable download resume
+     * Get enable range support
      *
      * @return bool
      */
-    public function getEnableDownloadResume()
+    public function getEnableRangeSupport()
     {
-        return $this->enableDownloadResume;
+        return $this->enableRangeSupport;
     }
 
     /**

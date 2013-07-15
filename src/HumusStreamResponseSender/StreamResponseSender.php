@@ -135,10 +135,10 @@ class StreamResponseSender extends SimpleStreamResponseSender
         $this->rangeStart = 0;
         $this->rangeEnd = null;
 
-        $enableDownloadResume = $this->getOptions()->getEnableDownloadResume();
+        $enableRangeSupport = $this->getOptions()->getEnableRangeSupport();
         $requestHeaders = $this->getRequest()->getHeaders();
 
-        if ($enableDownloadResume && $requestHeaders->has('Range')) {
+        if ($enableRangeSupport && $requestHeaders->has('Range')) {
             list($a, $range) = explode('=', $requestHeaders->get('Range')->getFieldValue());
             if (substr($range, -1) == '-') {
                 // range: 3442-
@@ -175,7 +175,7 @@ class StreamResponseSender extends SimpleStreamResponseSender
 
         $responseHeaders->addHeaderLine('Content-Length: ' . $length);
 
-        if ($enableDownloadResume) {
+        if ($enableRangeSupport) {
             $responseHeaders->addHeaders(
                 array(
                     'Accept-Ranges: bytes',
@@ -205,11 +205,11 @@ class StreamResponseSender extends SimpleStreamResponseSender
         $stream = $response->getStream();
 
         $options = $this->getOptions();
-        $enableDownloadResume = $options->getEnableDownloadResume();
+        $enableRangeSupport = $options->getEnableRangeSupport();
         $enableSpeedLimit = $options->getEnableSpeedLimit();
 
         // use fpassthru, if download speed limit and download resume are disabled
-        if (!$enableDownloadResume && !$enableSpeedLimit) {
+        if (!$enableRangeSupport && !$enableSpeedLimit) {
             fpassthru($stream);
             $event->setContentSent();
             return $this;

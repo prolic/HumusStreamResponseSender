@@ -136,7 +136,7 @@ class StreamResponseSenderTest extends TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSendHeadersAndStreamWithEnabledDownloadResumeWithoutRangeHeaders()
+    public function testSendHeadersAndStreamWithEnabledRangeSupportWithoutRangeHeaders()
     {
         if (!function_exists('xdebug_get_headers')) {
             $this->markTestSkipped('Xdebug extension needed, skipped test');
@@ -167,7 +167,7 @@ class StreamResponseSenderTest extends TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSendHeadersAndStreamWithEnabledDownloadResumeWithoutRangeHeadersAndChunkSize()
+    public function testSendHeadersAndStreamWithEnabledRangeSupportWithoutRangeHeadersAndChunkSize()
     {
         if (!function_exists('xdebug_get_headers')) {
             $this->markTestSkipped('Xdebug extension needed, skipped test');
@@ -197,7 +197,7 @@ class StreamResponseSenderTest extends TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSendHeadersAndStreamWithEnabledDownloadResumeWithInvalidRangeStartHeader()
+    public function testSendHeadersAndStreamWithEnabledRangeSupportWithInvalidRangeStartHeader()
     {
         $responseSender = new StreamResponseSender(
             array(
@@ -219,7 +219,7 @@ class StreamResponseSenderTest extends TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSendHeadersAndStreamWithEnabledDownloadResumeWithInvalidRangeEndHeader()
+    public function testSendHeadersAndStreamWithEnabledRangeSupportWithInvalidRangeEndHeader()
     {
         $responseSender = new StreamResponseSender(
             array(
@@ -241,7 +241,7 @@ class StreamResponseSenderTest extends TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSendHeadersAndStreamWithEnabledDownloadResumeWithInvalidRangeStartAndEndHeader()
+    public function testSendHeadersAndStreamWithEnabledRangeSupportWithInvalidRangeStartAndEndHeader()
     {
         $responseSender = new StreamResponseSender(
             array(
@@ -263,7 +263,7 @@ class StreamResponseSenderTest extends TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSendHeadersAndStreamWithEnabledDownloadResumeWithInvalidRangeStartHeader2()
+    public function testSendHeadersAndStreamWithEnabledRangeSupportWithInvalidRangeStartHeader2()
     {
         $responseSender = new StreamResponseSender(
             array(
@@ -285,7 +285,7 @@ class StreamResponseSenderTest extends TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSendHeadersAndStreamWithEnabledDownloadResumeWithRangeHeader()
+    public function testSendHeadersAndStreamWithEnabledRangeSupportWithRangeHeader()
     {
         if (!function_exists('xdebug_get_headers')) {
             $this->markTestSkipped('Xdebug extension needed, skipped test');
@@ -325,7 +325,7 @@ class StreamResponseSenderTest extends TestCase
     /**
      * @runInSeparateProcess
      */
-    public function testSendHeadersAndStreamWithEnabledDownloadResumeWithRangeHeaderOpenEnd()
+    public function testSendHeadersAndStreamWithEnabledRangeSupportWithRangeHeaderOpenEnd()
     {
         if (!function_exists('xdebug_get_headers')) {
             $this->markTestSkipped('Xdebug extension needed, skipped test');
