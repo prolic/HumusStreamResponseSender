@@ -48,7 +48,7 @@ Sample configuration:
     return array(
         'HumusStreamResponseSender' => array(
             'enable_speed_limit' => true,
-            'enable_download_resume' => true,
+            'enable_range_support' => true,
             'chunk_size' => 1024 * 1024 //  = 1MB/s
         ),
     );
