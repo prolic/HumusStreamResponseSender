@@ -26,7 +26,7 @@ Features / Goals
 
 * Send stream responses with Zend Framwork 2 [COMPLETE]
 * Limit download speed [COMPLETE]
-* Allow for download resume [COMPLETE]
+* Allow for range support (download resume) [COMPLETE]
 * Send streams with pecl_http extension [INCOMPLETE]
 * Send streams with X-SendFile [INCOMPLETE]
 * Send streams with X-Accel-Redirect [INCOMPLETE]
@@ -73,5 +73,5 @@ If the speed limit switch is set to true, the used chunksize will also be the do
 
 The default configuration is:
 - enable_speed_limit = false
-- enable_download_resume = false
+- enable_range_support = false
 - chunk_size = 262144
