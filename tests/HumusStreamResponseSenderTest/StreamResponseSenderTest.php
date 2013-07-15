@@ -146,7 +146,7 @@ class StreamResponseSenderTest extends TestCase
 
         $responseSender = new StreamResponseSender(
             array(
-                'enable_download_resume' => true
+                'enable_range_support' => true
             )
         );
         $responseSender->setRequest($this->requestMock);
@@ -177,7 +177,7 @@ class StreamResponseSenderTest extends TestCase
 
         $responseSender = new StreamResponseSender(
             array(
-                'enable_download_resume' => true,
+                'enable_range_support' => true,
                 'chunk_size' => 10
             )
         );
@@ -201,7 +201,7 @@ class StreamResponseSenderTest extends TestCase
     {
         $responseSender = new StreamResponseSender(
             array(
-                'enable_download_resume' => true
+                'enable_range_support' => true
             )
         );
 
@@ -223,7 +223,7 @@ class StreamResponseSenderTest extends TestCase
     {
         $responseSender = new StreamResponseSender(
             array(
-                'enable_download_resume' => true
+                'enable_range_support' => true
             )
         );
 
@@ -245,7 +245,7 @@ class StreamResponseSenderTest extends TestCase
     {
         $responseSender = new StreamResponseSender(
             array(
-                'enable_download_resume' => true
+                'enable_range_support' => true
             )
         );
 
@@ -267,7 +267,7 @@ class StreamResponseSenderTest extends TestCase
     {
         $responseSender = new StreamResponseSender(
             array(
-                'enable_download_resume' => true
+                'enable_range_support' => true
             )
         );
 
@@ -293,7 +293,7 @@ class StreamResponseSenderTest extends TestCase
 
         $responseSender = new StreamResponseSender(
             array(
-                'enable_download_resume' => true,
+                'enable_range_support' => true,
                 'chunk_size' => 10
             )
         );
@@ -333,7 +333,7 @@ class StreamResponseSenderTest extends TestCase
 
         $responseSender = new StreamResponseSender(
             array(
-                'enable_download_resume' => true,
+                'enable_range_support' => true,
                 'chunk_size' => 10
             )
         );
