@@ -42,6 +42,9 @@ class Module implements
      */
     public function onBootstrap(EventInterface $e)
     {
+        if (PHP_SAPI == 'cli') {
+            return;
+        }
         $app = $e->getTarget();
         $serviceManager = $app->getServiceManager();
         $streamResponseSender = $serviceManager->get(__NAMESPACE__ . '\StreamResponseSender');
