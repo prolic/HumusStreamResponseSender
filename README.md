@@ -56,7 +56,7 @@ Sample configuration:
 Usage of controller plugin
 --------------------------
 
-To return a stream response from a controller, you can use the stream plugin.
+The simplest way to stream a response from a controller, is the stream plugin.
 
     class IndexController extends AbstractActionController
     {
