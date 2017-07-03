@@ -298,7 +298,7 @@ class StreamResponseSenderTest extends TestCase
             )
         );
 
-        $this->requestMock->getHeaders()->addHeaderLine('Range: bytes=4-10');
+        $this->requestMock->getHeaders()->addHeaderLine('Range: bytes=4-9');
         $responseSender->setRequest($this->requestMock);
 
         ob_start();
@@ -317,7 +317,47 @@ class StreamResponseSenderTest extends TestCase
                 'Content-Transfer-Encoding: binary',
                 'Content-Length: 6',
                 'Accept-Ranges: bytes',
-                'Content-Range: bytes 4-10/66'
+                'Content-Range: bytes 4-9/66'
+            )
+        );
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testSendHeadersAndStreamWithEnabledRangeSupportWithRangeHeaderLastByte()
+    {
+        if (!function_exists('xdebug_get_headers')) {
+            $this->markTestSkipped('Xdebug extension needed, skipped test');
+        }
+
+        $responseSender = new StreamResponseSender(
+            array(
+                'enable_range_support' => true,
+                'chunk_size' => 10
+            )
+        );
+
+        $this->requestMock->getHeaders()->addHeaderLine('Range: bytes=65-65');
+        $responseSender->setRequest($this->requestMock);
+
+        ob_start();
+        $responseSender($this->mockSendResponseEvent);
+        $body = ob_get_clean();
+
+        $this->assertEquals('.', $body);
+
+        $basename = basename($this->testFile);
+        $this->assertSame(206, $this->mockSendResponseEvent->getResponse()->getStatusCode());
+
+        $this->validateSentHeaders(
+            array(
+                'Content-Disposition: attachment; filename="' . $basename . '"',
+                'Content-Type: application/octet-stream',
+                'Content-Transfer-Encoding: binary',
+                'Content-Length: 1',
+                'Accept-Ranges: bytes',
+                'Content-Range: bytes 65-65/66'
             )
         );
     }
