@@ -19,7 +19,7 @@
 namespace HumusStreamResponseSenderTest;
 
 use HumusStreamResponseSender\Module;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Traversable;
 
 class ModuleTest extends TestCase
@@ -35,8 +35,10 @@ class ModuleTest extends TestCase
     {
         $module = new Module();
         $config = $module->getAutoloaderConfig();
-        if (!is_array($config) && !($config instanceof Traversable)) {
-            $this->fail('getAutoloaderConfig expected to return array or Traversable');
-        }
+
+        $this->assertTrue(
+            is_array($config) || $config instanceof Traversable,
+            'getAutoloaderConfig expected to return array or Traversable'
+        );
     }
 }

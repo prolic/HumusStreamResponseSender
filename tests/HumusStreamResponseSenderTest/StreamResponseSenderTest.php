@@ -19,8 +19,7 @@
 namespace HumusStreamResponseSenderTest;
 
 use HumusStreamResponseSender\StreamResponseSender;
-use PHPUnit_Framework_TestCase as TestCase;
-use Zend\Http\Headers;
+use PHPUnit\Framework\TestCase;
 use Zend\Http\Response\Stream;
 
 class StreamResponseSenderTest extends TestCase
@@ -79,10 +78,7 @@ class StreamResponseSenderTest extends TestCase
         );
         $this->headers = $headers;
 
-        $mockSendResponseEvent = $this->getMock(
-            'Zend\Mvc\ResponseSender\SendResponseEvent',
-            array('getResponse')
-        );
+        $mockSendResponseEvent = $this->createMock('Zend\Mvc\ResponseSender\SendResponseEvent');
         $mockSendResponseEvent
             ->expects($this->any())
             ->method('getResponse')
@@ -324,6 +320,7 @@ class StreamResponseSenderTest extends TestCase
 
     /**
      * @runInSeparateProcess
+     * @group by
      */
     public function testSendHeadersAndStreamWithEnabledRangeSupportWithRangeHeaderLastByte()
     {
