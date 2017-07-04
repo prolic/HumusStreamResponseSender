@@ -78,7 +78,14 @@ class StreamResponseSenderTest extends TestCase
         );
         $this->headers = $headers;
 
-        $mockSendResponseEvent = $this->createMock('Zend\Mvc\ResponseSender\SendResponseEvent');
+        //don't mock setContentSent and contentSent
+        $mockSendResponseEvent = $this->getMockBuilder('Zend\Mvc\ResponseSender\SendResponseEvent')
+                    ->disableOriginalConstructor()
+                    ->disableOriginalClone()
+                    ->disableArgumentCloning()
+                    ->disallowMockingUnknownTypes()
+                    ->setMethodsExcept(array('setContentSent', 'contentSent'))
+                    ->getMock();
         $mockSendResponseEvent
             ->expects($this->any())
             ->method('getResponse')
