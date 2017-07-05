@@ -157,7 +157,7 @@ class StreamResponseSender extends SimpleStreamResponseSender
                 $rangeEnd = $ranges[1];
                 if (!is_numeric($rangeStart)
                     || !is_numeric($rangeEnd)
-                    || ($rangeStart >= $rangeEnd)
+                    || ($rangeStart > $rangeEnd)
                     || $rangeEnd > $size2
                 ) {
                     // 416 (Requested range not satisfiable)
@@ -167,7 +167,7 @@ class StreamResponseSender extends SimpleStreamResponseSender
                 }
                 $this->rangeStart = $rangeStart;
                 $this->rangeEnd = $rangeEnd;
-                $length = $rangeEnd - $rangeStart;
+                $length = $rangeEnd - $rangeStart + 1;
                 $size2 = $rangeEnd;
             }
             $response->setStatusCode(206); // 206 (Partial Content)
@@ -219,7 +219,7 @@ class StreamResponseSender extends SimpleStreamResponseSender
         $rangeStart = $this->rangeStart;
         if (null !== $this->rangeEnd) {
             $rangeEnd = $this->rangeEnd;
-            $length = $rangeEnd-$rangeStart;
+            $length = $rangeEnd - $rangeStart + 1;
         } else {
             $length = $response->getContentLength();
         }

@@ -18,7 +18,7 @@
 
 namespace HumusStreamResponseSenderTest;
 
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 use Zend\Mvc\Service\ServiceManagerConfig;
 use Zend\ServiceManager\ServiceManager;
 
@@ -66,7 +66,9 @@ class ServiceManagerTestCase extends TestCase
         );
 
         $serviceManager->setService('ApplicationConfig', $configuration);
-        $serviceManager->setFactory('ServiceListener', 'Zend\Mvc\Service\ServiceListenerFactory');
+        if (!$serviceManager->has('ServiceListener')) {
+            $serviceManager->setFactory('ServiceListener', 'Zend\Mvc\Service\ServiceListenerFactory');
+        }
 
         /* @var $moduleManager \Zend\ModuleManager\ModuleManagerInterface */
         $moduleManager = $serviceManager->get('ModuleManager');

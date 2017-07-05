@@ -19,7 +19,7 @@
 namespace HumusStreamResponseSenderTest;
 
 use HumusStreamResponseSender\Controller\Plugin\Stream;
-use PHPUnit_Framework_TestCase as TestCase;
+use PHPUnit\Framework\TestCase;
 
 class StreamTest extends TestCase
 {
