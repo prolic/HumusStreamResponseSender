@@ -18,6 +18,7 @@
 
 namespace HumusStreamResponseSender;
 
+use Interop\Container\ContainerInterface;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -45,5 +46,16 @@ class StreamResponseSenderFactory implements FactoryInterface
         $streamResponseSender = new StreamResponseSender($options);
         $streamResponseSender->setRequest($serviceLocator->get('Request'));
         return $streamResponseSender;
+    }
+
+    /**
+     * @param ContainerInterface $container
+     * @param string $requestedName
+     * @param array|null $options
+     * @return mixed|object
+     */
+    public function __invoke(ContainerInterface $container, $requestedName, array $options = null)
+    {
+        return $this->createService($container);
     }
 }
